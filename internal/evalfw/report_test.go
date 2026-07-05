@@ -105,7 +105,7 @@ func TestReportWriter_AggregateMetrics(t *testing.T) {
 	}
 }
 
-func TestReportWriter_NoMetricsReturnsNil(t *testing.T) {
+func TestReportWriter_NoMetricsOmitsField(t *testing.T) {
 	tmp, _ := os.CreateTemp("", "eval-test-*.ndjson")
 	defer os.Remove(tmp.Name())
 	w, _ := NewReportWriter(tmp.Name())
@@ -113,7 +113,10 @@ func TestReportWriter_NoMetricsReturnsNil(t *testing.T) {
 		t.Fatalf("Write: %v", err)
 	}
 	data, _ := os.ReadFile(tmp.Name())
-	if !strings.Contains(string(data), `"metrics":{}`) && !strings.Contains(string(data), `"metrics":null`) {
-		t.Errorf("expected empty/null metrics, got %s", string(data))
+	if strings.Contains(string(data), `"metrics":`) {
+		t.Errorf("expected metrics field omitted when empty, got %s", string(data))
+	}
+	if !strings.Contains(string(data), `"suite":"empty"`) {
+		t.Errorf("expected suite field, got %s", string(data))
 	}
 }
