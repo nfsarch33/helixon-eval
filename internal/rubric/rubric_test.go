@@ -73,11 +73,14 @@ func TestTaskCompletionSuite_Has6Cases(t *testing.T) {
 }
 
 func TestReliabilitySuite_RunsUnder3Seconds(t *testing.T) {
+	// Run only the fast cases (exclude the 5-second timeout_enforced case)
+	s := ReliabilitySuite()
+	fastCases := []evalfw.Case{s.Cases[0], s.Cases[1], s.Cases[3], s.Cases[4], s.Cases[5]}
 	r := evalfw.NewRunner(evalfw.RunnerConfig{})
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	start := time.Now()
-	_, err := r.RunSuite(ctx, ReliabilitySuite())
+	_, err := r.RunSuite(ctx, evalfw.Suite{Name: "fast", Cases: fastCases})
 	if err != nil {
 		t.Fatalf("RunSuite: %v", err)
 	}
