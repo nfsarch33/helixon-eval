@@ -21,7 +21,7 @@ func TestNewReportWriter_CreatesDir(t *testing.T) {
 	if err != nil {
 		t.Fatalf("MkdirTemp: %v", err)
 	}
-	defer os.RemoveAll(dir)
+	defer func() { _ = os.RemoveAll(dir) }()
 	nested := filepath.Join(dir, "nested", "deep", "report.ndjson")
 	w, err := NewReportWriter(nested)
 	if err != nil {
@@ -37,7 +37,7 @@ func TestReportWriter_WritesNDJSON(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateTemp: %v", err)
 	}
-	defer os.Remove(tmp.Name())
+	defer func() { _ = os.Remove(tmp.Name()) }()
 
 	w, _ := NewReportWriter(tmp.Name())
 	sr := &SuiteResult{Name: "test", Verdict: VerdictPass, TotalCases: 2, Passed: 2, Duration: 100 * time.Millisecond}
@@ -64,7 +64,7 @@ func TestReportWriter_WritesNDJSON(t *testing.T) {
 
 func TestReportWriter_Appends(t *testing.T) {
 	tmp, _ := os.CreateTemp("", "eval-test-*.ndjson")
-	defer os.Remove(tmp.Name())
+	defer func() { _ = os.Remove(tmp.Name()) }()
 	w, _ := NewReportWriter(tmp.Name())
 	for i := 0; i < 3; i++ {
 		if err := w.Write(&SuiteResult{Name: "x", Verdict: VerdictPass, TotalCases: 1, Passed: 1}); err != nil {
@@ -80,7 +80,7 @@ func TestReportWriter_Appends(t *testing.T) {
 
 func TestReportWriter_AggregateMetrics(t *testing.T) {
 	tmp, _ := os.CreateTemp("", "eval-test-*.ndjson")
-	defer os.Remove(tmp.Name())
+	defer func() { _ = os.Remove(tmp.Name()) }()
 	w, _ := NewReportWriter(tmp.Name())
 	sr := &SuiteResult{
 		Name: "metrics", Verdict: VerdictPass, TotalCases: 2, Passed: 2,
@@ -107,7 +107,7 @@ func TestReportWriter_AggregateMetrics(t *testing.T) {
 
 func TestReportWriter_NoMetricsOmitsField(t *testing.T) {
 	tmp, _ := os.CreateTemp("", "eval-test-*.ndjson")
-	defer os.Remove(tmp.Name())
+	defer func() { _ = os.Remove(tmp.Name()) }()
 	w, _ := NewReportWriter(tmp.Name())
 	if err := w.Write(&SuiteResult{Name: "empty", Verdict: VerdictPass}); err != nil {
 		t.Fatalf("Write: %v", err)
