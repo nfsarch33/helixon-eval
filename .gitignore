@@ -1,0 +1,4 @@
+.sentrux/
+*.cover
+*.out
+.DS_Store
