@@ -2,6 +2,7 @@ package rubric
 
 import (
 	"context"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -27,13 +28,16 @@ func TestAllRubricsPresent(t *testing.T) {
 }
 
 func TestAllSuitesHasAllRubrics(t *testing.T) {
-	if len(AllSuites) != 5 {
-		t.Errorf("expected 5 suites, got %d", len(AllSuites))
-	}
+	// Every rubric in `All` must have a corresponding entry in `AllSuites`.
+	// AllSuites may have additional entries (multiple suites per rubric).
 	for _, r := range All {
 		if _, ok := AllSuites[r.Name]; !ok {
 			t.Errorf("missing suite for rubric %q", r.Name)
 		}
+	}
+	// Sanity: at least 16 suites (5 pre + 9 R6 + 2 real-models).
+	if len(AllSuites) < 16 {
+		t.Errorf("expected at least 16 suites, got %d", len(AllSuites))
 	}
 }
 
@@ -120,6 +124,14 @@ func TestObservabilitySuite_AllEmitMetrics(t *testing.T) {
 }
 
 func TestSecuritySuite_AllPassInCleanEnv(t *testing.T) {
+	// This test inspects the entire process environment for secret-named keys.
+	// In real dev/CI shells, env vars like TELEGRAM_BOT2_TOKEN, OPENAI_API_KEY,
+	// etc. are legitimately present (loaded from 1Password / shell rc).
+	// Set EVAL_ALLOW_ENV_SECRETS=1 to skip in those environments; the test
+	// still exercises the SecuritySuite logic via the dedicated suite tests.
+	if os.Getenv("EVAL_ALLOW_ENV_SECRETS") == "1" {
+		t.Skip("skipping: EVAL_ALLOW_ENV_SECRETS=1 (real env has legitimate secrets)")
+	}
 	r := evalfw.NewRunner(evalfw.RunnerConfig{})
 	sr, _ := r.RunSuite(context.Background(), SecuritySuite())
 	for _, cr := range sr.Cases {
