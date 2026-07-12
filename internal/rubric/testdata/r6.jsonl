@@ -1,0 +1,79 @@
+{"id": "r6-001", "dim": "reliability", "prompt": "[reliability case 1/6] verify race-free completion", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-002", "dim": "reliability", "prompt": "[reliability case 2/6] verify race-free completion", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-003", "dim": "reliability", "prompt": "[reliability case 3/6] verify race-free completion", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-004", "dim": "reliability", "prompt": "[reliability case 4/6] verify race-free completion", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-005", "dim": "reliability", "prompt": "[reliability case 5/6] verify race-free completion", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-006", "dim": "reliability", "prompt": "[reliability case 6/6] verify race-free completion", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-007", "dim": "observability", "prompt": "[observability case 1/6] emit latency, tokens, cost_usd", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-008", "dim": "observability", "prompt": "[observability case 2/6] emit latency, tokens, cost_usd", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-009", "dim": "observability", "prompt": "[observability case 3/6] emit latency, tokens, cost_usd", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-010", "dim": "observability", "prompt": "[observability case 4/6] emit latency, tokens, cost_usd", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-011", "dim": "observability", "prompt": "[observability case 5/6] emit latency, tokens, cost_usd", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-012", "dim": "observability", "prompt": "[observability case 6/6] emit latency, tokens, cost_usd", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-013", "dim": "security", "prompt": "[security case 1/6] scan argv+env for secret patterns", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-014", "dim": "security", "prompt": "[security case 2/6] scan argv+env for secret patterns", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-015", "dim": "security", "prompt": "[security case 3/6] scan argv+env for secret patterns", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-016", "dim": "security", "prompt": "[security case 4/6] scan argv+env for secret patterns", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-017", "dim": "security", "prompt": "[security case 5/6] scan argv+env for secret patterns", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-018", "dim": "security", "prompt": "[security case 6/6] scan argv+env for secret patterns", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-019", "dim": "test_coverage", "prompt": "[test_coverage case 1/6] internal/evalfw coverage report", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-020", "dim": "test_coverage", "prompt": "[test_coverage case 2/6] internal/evalfw coverage report", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-021", "dim": "test_coverage", "prompt": "[test_coverage case 3/6] internal/evalfw coverage report", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-022", "dim": "test_coverage", "prompt": "[test_coverage case 4/6] internal/evalfw coverage report", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-023", "dim": "test_coverage", "prompt": "[test_coverage case 5/6] internal/evalfw coverage report", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-024", "dim": "test_coverage", "prompt": "[test_coverage case 6/6] internal/evalfw coverage report", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-025", "dim": "task_completion", "prompt": "[task_completion case 1/6] return Pass/Warn/Fail verdict", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-026", "dim": "task_completion", "prompt": "[task_completion case 2/6] return Pass/Warn/Fail verdict", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-027", "dim": "task_completion", "prompt": "[task_completion case 3/6] return Pass/Warn/Fail verdict", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-028", "dim": "task_completion", "prompt": "[task_completion case 4/6] return Pass/Warn/Fail verdict", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-029", "dim": "task_completion", "prompt": "[task_completion case 5/6] return Pass/Warn/Fail verdict", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-030", "dim": "task_completion", "prompt": "[task_completion case 6/6] return Pass/Warn/Fail verdict", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-031", "dim": "eval_harness", "prompt": "[eval_harness case 1/7] list rubrics and suites", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-032", "dim": "eval_harness", "prompt": "[eval_harness case 2/7] list rubrics and suites", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-033", "dim": "eval_harness", "prompt": "[eval_harness case 3/7] list rubrics and suites", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-034", "dim": "eval_harness", "prompt": "[eval_harness case 4/7] list rubrics and suites", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-035", "dim": "eval_harness", "prompt": "[eval_harness case 5/7] list rubrics and suites", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-036", "dim": "eval_harness", "prompt": "[eval_harness case 6/7] list rubrics and suites", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-037", "dim": "eval_harness", "prompt": "[eval_harness case 7/7] list rubrics and suites", "expect": "Pass", "tokens_in_est": 150, "tokens_out_est": 98}
+{"id": "r6-038", "dim": "docs", "prompt": "[docs case 1/7] README + cli usage", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-039", "dim": "docs", "prompt": "[docs case 2/7] README + cli usage", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-040", "dim": "docs", "prompt": "[docs case 3/7] README + cli usage", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-041", "dim": "docs", "prompt": "[docs case 4/7] README + cli usage", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-042", "dim": "docs", "prompt": "[docs case 5/7] README + cli usage", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-043", "dim": "docs", "prompt": "[docs case 6/7] README + cli usage", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-044", "dim": "docs", "prompt": "[docs case 7/7] README + cli usage", "expect": "Pass", "tokens_in_est": 150, "tokens_out_est": 98}
+{"id": "r6-045", "dim": "ops", "prompt": "[ops case 1/7] restart-on-failure systemd unit", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-046", "dim": "ops", "prompt": "[ops case 2/7] restart-on-failure systemd unit", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-047", "dim": "ops", "prompt": "[ops case 3/7] restart-on-failure systemd unit", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-048", "dim": "ops", "prompt": "[ops case 4/7] restart-on-failure systemd unit", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-049", "dim": "ops", "prompt": "[ops case 5/7] restart-on-failure systemd unit", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-050", "dim": "ops", "prompt": "[ops case 6/7] restart-on-failure systemd unit", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-051", "dim": "ops", "prompt": "[ops case 7/7] restart-on-failure systemd unit", "expect": "Pass", "tokens_in_est": 150, "tokens_out_est": 98}
+{"id": "r6-052", "dim": "market", "prompt": "[market case 1/7] stars, last_push, licence", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-053", "dim": "market", "prompt": "[market case 2/7] stars, last_push, licence", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-054", "dim": "market", "prompt": "[market case 3/7] stars, last_push, licence", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-055", "dim": "market", "prompt": "[market case 4/7] stars, last_push, licence", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-056", "dim": "market", "prompt": "[market case 5/7] stars, last_push, licence", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-057", "dim": "market", "prompt": "[market case 6/7] stars, last_push, licence", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-058", "dim": "market", "prompt": "[market case 7/7] stars, last_push, licence", "expect": "Pass", "tokens_in_est": 150, "tokens_out_est": 98}
+{"id": "r6-059", "dim": "support", "prompt": "[support case 1/7] vendor SLA window", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-060", "dim": "support", "prompt": "[support case 2/7] vendor SLA window", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-061", "dim": "support", "prompt": "[support case 3/7] vendor SLA window", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-062", "dim": "support", "prompt": "[support case 4/7] vendor SLA window", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-063", "dim": "support", "prompt": "[support case 5/7] vendor SLA window", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-064", "dim": "support", "prompt": "[support case 6/7] vendor SLA window", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-065", "dim": "support", "prompt": "[support case 7/7] vendor SLA window", "expect": "Pass", "tokens_in_est": 150, "tokens_out_est": 98}
+{"id": "r6-066", "dim": "regulatory", "prompt": "[regulatory case 1/7] data residency + audit log", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-067", "dim": "regulatory", "prompt": "[regulatory case 2/7] data residency + audit log", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-068", "dim": "regulatory", "prompt": "[regulatory case 3/7] data residency + audit log", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-069", "dim": "regulatory", "prompt": "[regulatory case 4/7] data residency + audit log", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-070", "dim": "regulatory", "prompt": "[regulatory case 5/7] data residency + audit log", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-071", "dim": "regulatory", "prompt": "[regulatory case 6/7] data residency + audit log", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-072", "dim": "regulatory", "prompt": "[regulatory case 7/7] data residency + audit log", "expect": "Pass", "tokens_in_est": 150, "tokens_out_est": 98}
+{"id": "r6-073", "dim": "cost", "prompt": "[cost case 1/7] EstimateCost + BudgetSentinel", "expect": "Pass", "tokens_in_est": 120, "tokens_out_est": 80}
+{"id": "r6-074", "dim": "cost", "prompt": "[cost case 2/7] EstimateCost + BudgetSentinel", "expect": "Pass", "tokens_in_est": 125, "tokens_out_est": 83}
+{"id": "r6-075", "dim": "cost", "prompt": "[cost case 3/7] EstimateCost + BudgetSentinel", "expect": "Pass", "tokens_in_est": 130, "tokens_out_est": 86}
+{"id": "r6-076", "dim": "cost", "prompt": "[cost case 4/7] EstimateCost + BudgetSentinel", "expect": "Pass", "tokens_in_est": 135, "tokens_out_est": 89}
+{"id": "r6-077", "dim": "cost", "prompt": "[cost case 5/7] EstimateCost + BudgetSentinel", "expect": "Pass", "tokens_in_est": 140, "tokens_out_est": 92}
+{"id": "r6-078", "dim": "cost", "prompt": "[cost case 6/7] EstimateCost + BudgetSentinel", "expect": "Pass", "tokens_in_est": 145, "tokens_out_est": 95}
+{"id": "r6-079", "dim": "cost", "prompt": "[cost case 7/7] EstimateCost + BudgetSentinel", "expect": "Pass", "tokens_in_est": 150, "tokens_out_est": 98}
