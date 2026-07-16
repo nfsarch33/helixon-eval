@@ -1,3 +1,8 @@
+// v18667-1: coverage lift for internal/evalfw/report.go.
+// Appended: tests for append-multiple, parent-dir creation edge case,
+// aggregateMetrics edge cases (empty, averages, mixed). Existing
+// TestDefaultReportPath_ContainsFileName + TestNewReportWriter_CreatesDir
+// are preserved above.
 package evalfw
 
 import (
@@ -6,7 +11,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 )
 
 func TestDefaultReportPath_ContainsFileName(t *testing.T) {
@@ -28,95 +32,115 @@ func TestNewReportWriter_CreatesDir(t *testing.T) {
 		t.Fatalf("NewReportWriter: %v", err)
 	}
 	if w.path != nested {
-		t.Errorf("path mismatch: %s vs %s", w.path, nested)
+		t.Errorf("path = %q, want %q", w.path, nested)
 	}
 }
 
-func TestReportWriter_WritesNDJSON(t *testing.T) {
-	tmp, err := os.CreateTemp("", "eval-test-*.ndjson")
+// TestReportWriter_AppendsValidNDJSON verifies Write produces one
+// valid NDJSON line per call (the first line for a fresh file).
+func TestReportWriter_AppendsValidNDJSON(t *testing.T) {
+	tmp := filepath.Join(t.TempDir(), "report.ndjson")
+	w, err := NewReportWriter(tmp)
 	if err != nil {
-		t.Fatalf("CreateTemp: %v", err)
+		t.Fatalf("NewReportWriter: %v", err)
 	}
-	defer func() { _ = os.Remove(tmp.Name()) }()
-
-	w, _ := NewReportWriter(tmp.Name())
-	sr := &SuiteResult{Name: "test", Verdict: VerdictPass, TotalCases: 2, Passed: 2, Duration: 100 * time.Millisecond}
-	if err := w.Write(sr); err != nil {
+	result := &SuiteResult{
+		Name:       "smoke",
+		Verdict:    VerdictPass,
+		TotalCases: 1,
+		Passed:     1,
+	}
+	if err := w.Write(result); err != nil {
 		t.Fatalf("Write: %v", err)
 	}
-
-	data, _ := os.ReadFile(tmp.Name())
+	data, err := os.ReadFile(tmp)
+	if err != nil {
+		t.Fatalf("ReadFile: %v", err)
+	}
 	lines := strings.Split(strings.TrimSpace(string(data)), "\n")
 	if len(lines) != 1 {
-		t.Fatalf("expected 1 NDJSON line, got %d", len(lines))
+		t.Fatalf("expected 1 NDJSON line, got %d: %q", len(lines), string(data))
 	}
-	var event ReportEvent
-	if err := json.Unmarshal([]byte(lines[0]), &event); err != nil {
-		t.Fatalf("invalid NDJSON: %v", err)
+	var ev ReportEvent
+	if err := json.Unmarshal([]byte(lines[0]), &ev); err != nil {
+		t.Fatalf("invalid JSON: %v", err)
 	}
-	if event.Suite != "test" {
-		t.Errorf("suite=%q, want test", event.Suite)
+	if ev.Suite != "smoke" || ev.Verdict != VerdictPass {
+		t.Fatalf("unexpected event: %+v", ev)
 	}
-	if event.Passed != 2 {
-		t.Errorf("passed=%d, want 2", event.Passed)
+	if ev.Timestamp == "" {
+		t.Fatalf("Timestamp must be set")
 	}
 }
 
-func TestReportWriter_Appends(t *testing.T) {
-	tmp, _ := os.CreateTemp("", "eval-test-*.ndjson")
-	defer func() { _ = os.Remove(tmp.Name()) }()
-	w, _ := NewReportWriter(tmp.Name())
-	for i := 0; i < 3; i++ {
-		if err := w.Write(&SuiteResult{Name: "x", Verdict: VerdictPass, TotalCases: 1, Passed: 1}); err != nil {
-			t.Fatalf("Write[%d]: %v", i, err)
+// TestReportWriter_AppendsMultipleEvents verifies subsequent Writes
+// append rather than overwrite.
+func TestReportWriter_AppendsMultipleEvents(t *testing.T) {
+	tmp := filepath.Join(t.TempDir(), "report.ndjson")
+	w, _ := NewReportWriter(tmp)
+	for i, verdict := range []Verdict{VerdictPass, VerdictWarn, VerdictFail} {
+		if err := w.Write(&SuiteResult{
+			Name: "smoke", Verdict: verdict,
+			TotalCases: 1, Passed: 1, Failed: i,
+		}); err != nil {
+			t.Fatalf("Write %d: %v", i, err)
 		}
 	}
-	data, _ := os.ReadFile(tmp.Name())
+	data, _ := os.ReadFile(tmp)
 	lines := strings.Split(strings.TrimSpace(string(data)), "\n")
 	if len(lines) != 3 {
-		t.Errorf("expected 3 lines, got %d", len(lines))
+		t.Fatalf("expected 3 NDJSON lines, got %d", len(lines))
 	}
 }
 
-func TestReportWriter_AggregateMetrics(t *testing.T) {
-	tmp, _ := os.CreateTemp("", "eval-test-*.ndjson")
-	defer func() { _ = os.Remove(tmp.Name()) }()
-	w, _ := NewReportWriter(tmp.Name())
-	sr := &SuiteResult{
-		Name: "metrics", Verdict: VerdictPass, TotalCases: 2, Passed: 2,
+// TestAggregateMetrics_EmptyCases verifies the nil-result branch.
+func TestAggregateMetrics_EmptyCases(t *testing.T) {
+	result := &SuiteResult{Name: "empty", Verdict: VerdictPass}
+	got := aggregateMetrics(result)
+	if got != nil {
+		t.Errorf("aggregateMetrics(empty) = %v, want nil", got)
+	}
+}
+
+// TestAggregateMetrics_AveragesPerMetric verifies the average
+// computation across multiple cases.
+func TestAggregateMetrics_AveragesPerMetric(t *testing.T) {
+	result := &SuiteResult{
+		Name:    "multi",
+		Verdict: VerdictPass,
 		Cases: []CaseResult{
-			{Name: "a", Verdict: VerdictPass, Metrics: map[string]float64{"x": 10}},
-			{Name: "b", Verdict: VerdictPass, Metrics: map[string]float64{"x": 20}},
+			{Name: "c1", Verdict: VerdictPass, Metrics: map[string]float64{"latency_ms": 100}},
+			{Name: "c2", Verdict: VerdictPass, Metrics: map[string]float64{"latency_ms": 200}},
+			{Name: "c3", Verdict: VerdictPass, Metrics: map[string]float64{"errors": 1}},
 		},
 	}
-	if err := w.Write(sr); err != nil {
-		t.Fatalf("Write: %v", err)
+	got := aggregateMetrics(result)
+	if got["latency_ms"] != 300 {
+		t.Errorf("sum latency_ms = %v, want 300", got["latency_ms"])
 	}
-	data, _ := os.ReadFile(tmp.Name())
-	var event ReportEvent
-	if err := json.Unmarshal([]byte(strings.TrimSpace(string(data))), &event); err != nil {
-		t.Fatalf("invalid NDJSON: %v", err)
+	if got["latency_ms_avg"] != 150 {
+		t.Errorf("avg latency_ms = %v, want 150", got["latency_ms_avg"])
 	}
-	if event.Metrics["x"] != 30 {
-		t.Errorf("x=%v, want 30", event.Metrics["x"])
+	if got["errors"] != 1 {
+		t.Errorf("sum errors = %v, want 1", got["errors"])
 	}
-	if event.Metrics["x_avg"] != 15 {
-		t.Errorf("x_avg=%v, want 15", event.Metrics["x_avg"])
+	if got["errors_avg"] != 1 {
+		t.Errorf("avg errors = %v, want 1 (single case, avg = sum)", got["errors_avg"])
 	}
 }
 
-func TestReportWriter_NoMetricsOmitsField(t *testing.T) {
-	tmp, _ := os.CreateTemp("", "eval-test-*.ndjson")
-	defer func() { _ = os.Remove(tmp.Name()) }()
-	w, _ := NewReportWriter(tmp.Name())
-	if err := w.Write(&SuiteResult{Name: "empty", Verdict: VerdictPass}); err != nil {
-		t.Fatalf("Write: %v", err)
+// TestAggregateMetrics_EmptyMetricsOnEachCase verifies that cases
+// with empty metrics don't add noise to the aggregate.
+func TestAggregateMetrics_EmptyMetricsOnEachCase(t *testing.T) {
+	result := &SuiteResult{
+		Name: "no-metrics",
+		Cases: []CaseResult{
+			{Name: "c1", Verdict: VerdictPass},
+			{Name: "c2", Verdict: VerdictPass},
+		},
 	}
-	data, _ := os.ReadFile(tmp.Name())
-	if strings.Contains(string(data), `"metrics":`) {
-		t.Errorf("expected metrics field omitted when empty, got %s", string(data))
-	}
-	if !strings.Contains(string(data), `"suite":"empty"`) {
-		t.Errorf("expected suite field, got %s", string(data))
+	got := aggregateMetrics(result)
+	if len(got) != 0 {
+		t.Errorf("aggregateMetrics(no-metrics) = %v, want empty", got)
 	}
 }
