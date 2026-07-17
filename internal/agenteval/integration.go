@@ -7,11 +7,17 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/nfsarch33/helixon-eval/internal/evalfw"
 	"github.com/nfsarch33/helixon-eval/internal/rubric"
 )
+
+// runAgentMu serialises reads/writes of the RunAgent hook so tests that swap
+// the global hook in t.Cleanup do not race against goroutines spawned by
+// caseForTask. CARRY-182 (race on integration_test.go:132 vs integration.go:160).
+var runAgentMu sync.Mutex
 
 // ProductionModels are the three models every Helixon Agent run must
 // cover. Adding a fourth model is a deliberate change: bump the constant
@@ -141,8 +147,30 @@ type agentHook func(ctx context.Context, task, model string) (passed bool, metri
 // RunAgent is the seam where the live Helixon Agent runtime would
 // dispatch a task. Tests override it; production wires it to
 // helixon-platform/internal/agent/checkpoint.
+//
+// Reads and writes are serialised by runAgentMu so test t.Cleanup
+// swapping the hook does not race against caseForTask's spawned
+// goroutines (CARRY-182 fix).
 var RunAgent agentHook = func(ctx context.Context, task, model string) (bool, map[string]float64, error) {
 	return true, map[string]float64{"task": hashTask(task), "model_hash": hashModel(model)}, nil
+}
+
+// callRunAgent invokes RunAgent under runAgentMu so the spawned goroutine
+// reads the hook atomically. Tests that swap the hook must also hold the
+// lock (use SetRunAgent).
+func callRunAgent(ctx context.Context, task, model string) (bool, map[string]float64, error) {
+	runAgentMu.Lock()
+	defer runAgentMu.Unlock()
+	return RunAgent(ctx, task, model)
+}
+
+// SetRunAgent swaps the RunAgent hook under runAgentMu. Test setup and
+// teardown must use this rather than assigning RunAgent directly so the
+// spawned goroutines in caseForTask never observe a half-written hook.
+func SetRunAgent(h agentHook) {
+	runAgentMu.Lock()
+	defer runAgentMu.Unlock()
+	RunAgent = h
 }
 
 func caseForTask(task, model string, cfg Config) func(ctx context.Context) evalfw.CaseResult {
@@ -157,7 +185,7 @@ func caseForTask(task, model string, cfg Config) func(ctx context.Context) evalf
 		}
 		ch := make(chan result, 1)
 		go func() {
-			ok, metric, err := RunAgent(caseCtx, task, model)
+			ok, metric, err := callRunAgent(caseCtx, task, model)
 			ch <- result{ok: ok, metric: metric, err: err}
 		}()
 
