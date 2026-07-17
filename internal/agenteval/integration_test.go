@@ -129,12 +129,12 @@ func Test3_CodeMapFreshness_FailWhenMissing(t *testing.T) {
 // string in the verdict.
 func Test4_Loopguard_TripsOnLongCase(t *testing.T) {
 	prev := agenteval.RunAgent
-	t.Cleanup(func() { agenteval.RunAgent = prev })
+	t.Cleanup(func() { agenteval.SetRunAgent(prev) })
 
-	agenteval.RunAgent = func(ctx context.Context, task, model string) (bool, map[string]float64, error) {
+	agenteval.SetRunAgent(func(ctx context.Context, task, model string) (bool, map[string]float64, error) {
 		<-ctx.Done()
 		return false, nil, ctx.Err()
-	}
+	})
 
 	suite, err := agenteval.SuiteForRun("loopguard-trip", agenteval.Config{LoopguardTimeout: 50 * time.Millisecond})
 	if err != nil {
