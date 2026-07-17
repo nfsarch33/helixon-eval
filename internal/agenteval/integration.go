@@ -26,12 +26,20 @@ var ProductionModels = []string{"MiniMax-M3", "qwen3.7-plus", "qwen3.7-max"}
 
 // CanonicalTasks is the fixed task set the agent eval matrix runs.
 // Order is intentional (stable ordering for verdict reporting).
+//
+// v18681-3 added 2 multi-step coding tasks (idempotency_key_chain and
+// json_diff_reconciliation) to bring the matrix to 7 tasks. The 5-task
+// matrix (5×3=15 cases) was the v18671-1 baseline; the 7-task matrix
+// (7×3=21 cases) is the v18681+ baseline. Task IDs are kebab-case and
+// stable for verdict reporting and cross-sprint comparisons.
 var CanonicalTasks = []string{
-	"tool_dispatch_correctness",
-	"checkpoint_emits_metrics",
-	"livechannel_open_close",
-	"loopguard_trips_on_infinite",
-	"rubric_compatibility_check",
+	"tool_dispatch_correctness",   // v17600
+	"checkpoint_emits_metrics",    // v17600
+	"livechannel_open_close",      // v17600
+	"loopguard_trips_on_infinite", // v17600
+	"rubric_compatibility_check",  // v17600
+	"idempotency_key_chain",       // v18681-3 (NEW; multi-step coding)
+	"json_diff_reconciliation",    // v18681-3 (NEW; multi-step coding)
 }
 
 // FreshnessTTL bounds how stale a CODEMAP.md can be before the suite

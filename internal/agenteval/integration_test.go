@@ -12,17 +12,18 @@ import (
 	"github.com/nfsarch33/helixon-eval/internal/evalfw"
 )
 
-// Test1_5x3ModelMatrix_Passes asserts the cross product is exactly
-// 5 tasks × 3 models = 15 cases. A drift here means the canonical
-// task set or production model list changed without updating both the
-// integration layer and the eval matrix assertions.
-func Test1_5x3ModelMatrix_Passes(t *testing.T) {
+// Test1_7x3ModelMatrix_Passes asserts the cross product is exactly
+// 7 tasks × 3 models = 21 cases (v18681-3 went from 5 to 7 tasks).
+// A drift here means the canonical task set or production model list
+// changed without updating both the integration layer and the eval
+// matrix assertions.
+func Test1_7x3ModelMatrix_Passes(t *testing.T) {
 	suite, err := agenteval.SuiteForRun("v18628-1", agenteval.Config{})
 	if err != nil {
 		t.Fatalf("SuiteForRun: %v", err)
 	}
-	if got, want := len(suite.Cases), 15; got != want {
-		t.Fatalf("expected %d (5 tasks × 3 models) cases, got %d", want, got)
+	if got, want := len(suite.Cases), 21; got != want {
+		t.Fatalf("expected %d (7 tasks × 3 models) cases, got %d", want, got)
 	}
 	// Every (task, model) pair must appear exactly once.
 	for _, task := range agenteval.CanonicalTasks {
@@ -36,7 +37,7 @@ func Test1_5x3ModelMatrix_Passes(t *testing.T) {
 				}
 			}
 			if !found {
-				t.Errorf("missing case %q in 5×3 matrix", name)
+				t.Errorf("missing case %q in 7×3 matrix", name)
 			}
 		}
 	}
@@ -147,8 +148,8 @@ func Test4_Loopguard_TripsOnLongCase(t *testing.T) {
 	if result.Verdict != evalfw.VerdictFail {
 		t.Fatalf("expected suite Verdict=Fail, got %s (passed=%d failed=%d)", result.Verdict, result.Passed, result.Failed)
 	}
-	if result.Failed != 15 {
-		t.Errorf("expected all 15 cases to trip the loopguard, got failed=%d", result.Failed)
+	if result.Failed != 21 {
+		t.Errorf("expected all 21 cases to trip the loopguard, got failed=%d", result.Failed)
 	}
 	// Spot-check one case to confirm the metric + error are set.
 	var first *evalfw.CaseResult
@@ -166,17 +167,17 @@ func Test4_Loopguard_TripsOnLongCase(t *testing.T) {
 	}
 }
 
-// Test5_IntegrationSuite_HappyPath runs the full 5×3 matrix with the
+// Test5_IntegrationSuite_HappyPath runs the full 7×3 matrix with the
 // default (passing) agent hook and asserts every case passes. This is
 // the contract test the production pilot invokes before declaring
 // "agent eval matrix GREEN".
 func Test5_IntegrationSuite_HappyPath(t *testing.T) {
 	prev := agenteval.RunAgent
-	t.Cleanup(func() { agenteval.RunAgent = prev })
+	t.Cleanup(func() { agenteval.SetRunAgent(prev) })
 
-	agenteval.RunAgent = func(ctx context.Context, task, model string) (bool, map[string]float64, error) {
+	agenteval.SetRunAgent(func(ctx context.Context, task, model string) (bool, map[string]float64, error) {
 		return true, map[string]float64{"ok": 1, "task": float64(len(task))}, nil
-	}
+	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -187,7 +188,7 @@ func Test5_IntegrationSuite_HappyPath(t *testing.T) {
 	if res.Verdict != evalfw.VerdictPass {
 		t.Fatalf("expected Pass verdict, got %s (passed=%d failed=%d)", res.Verdict, res.Passed, res.Failed)
 	}
-	if res.TotalCases != 15 {
-		t.Errorf("expected 15 cases, got %d", res.TotalCases)
+	if res.TotalCases != 21 {
+		t.Errorf("expected 21 cases, got %d", res.TotalCases)
 	}
 }
