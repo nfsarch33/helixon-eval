@@ -29,7 +29,7 @@ func main() {
 		Short: "Helixon evaluation harness (5 rubrics: reliability, observability, security, test coverage, task completion)",
 	}
 
-	root.AddCommand(runCmd(), reportCmd(), listCmd())
+	root.AddCommand(runCmd(), reportCmd(), listCmd(), demoCmd())
 	if err := root.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, "ERROR:", err)
 		os.Exit(1)
