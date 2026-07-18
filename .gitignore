@@ -2,3 +2,7 @@
 *.cover
 *.out
 .DS_Store
+
+# Pre-squash leftovers from v18688-2 branch surgery (now tracked as cmd/helixon-eval/demo.go on main)
+cmd/demo/
+internal/demo/
