@@ -97,15 +97,23 @@ type ChatResponse struct {
 
 // Client is a thin OpenAI-compatible HTTP client.
 type Client struct {
-	backend Backend
-	apiKey  string
-	http    *http.Client
+	backend  Backend
+	apiKey   string
+	http     *http.Client
+	upstream string // empty = use backend.Endpoint()
 }
 
 // New returns a Client for the given backend and API key. Empty apiKey is
 // rejected; call sites must resolve the key via 1Password at startup.
 func New(backend Backend, apiKey string) (*Client, error) {
 	return newClient(backend, apiKey, &http.Client{Timeout: 120 * time.Second})
+}
+
+// NewWithUpstream returns a Client whose Chat() dials the supplied
+// upstream URL instead of the canonical backend endpoint. Intended for
+// tests using httptest.NewServer; production code MUST use New().
+func NewWithUpstream(backend Backend, apiKey, upstream string) (*Client, error) {
+	return newClientWithUpstream(backend, apiKey, &http.Client{Timeout: 120 * time.Second}, upstream)
 }
 
 // newClient is the internal constructor that allows tests to inject a
@@ -125,6 +133,18 @@ func newClient(backend Backend, apiKey string, hc *http.Client) (*Client, error)
 	}, nil
 }
 
+// newClientWithUpstream is the test-only constructor that lets the
+// caller override the dial target. Empty upstream falls back to
+// backend.Endpoint().
+func newClientWithUpstream(backend Backend, apiKey string, hc *http.Client, upstream string) (*Client, error) {
+	c, err := newClient(backend, apiKey, hc)
+	if err != nil {
+		return nil, err
+	}
+	c.upstream = upstream
+	return c, nil
+}
+
 // Backend returns the configured backend identifier.
 func (c *Client) Backend() Backend { return c.backend }
 
@@ -132,6 +152,9 @@ func (c *Client) Backend() Backend { return c.backend }
 // are returned wrapped; HTTP 4xx/5xx responses surface as ResponseError
 // with the status code and body.
 func (c *Client) Chat(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
+	if c.upstream != "" {
+		return c.chatAt(ctx, c.upstream, req)
+	}
 	return c.chatAt(ctx, c.backend.Endpoint(), req)
 }
 
