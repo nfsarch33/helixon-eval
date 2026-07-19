@@ -8,6 +8,14 @@
 // Every Case registered against a Suite implements one of the 5 rubrics
 // (reliability, observability, security, test coverage, task completion).
 // See internal/rubric for the rubric contracts.
+//
+// DEPRECATED (v18699-2): the canonical helixon-eval binary is
+// github.com/nfsarch33/helixon-platform/cmd/helixon-eval per ADR-075.
+// This binary remains functional for backward compatibility. New code SHOULD
+// install the platform binary via `go install ./cmd/helixon-eval` from
+// the helixon-platform checkout. Removal scheduled for v18710.
+//
+// See: cursor-global-kb/adrs/ADR-075-helixon-eval-binary-canonicity.md
 package main
 
 import (
@@ -24,9 +32,10 @@ import (
 )
 
 func main() {
+	fmt.Fprintln(os.Stderr, "WARNING: this helixon-eval binary is DEPRECATED (v18699-2, ADR-075). Use github.com/nfsarch33/helixon-platform/cmd/helixon-eval instead.")
 	root := &cobra.Command{
 		Use:   "helixon-eval",
-		Short: "Helixon evaluation harness (5 rubrics: reliability, observability, security, test coverage, task completion)",
+		Short: "Helixon evaluation harness (5 rubrics: reliability, observability, security, test coverage, task completion) [DEPRECATED v18699-2]",
 	}
 
 	root.AddCommand(runCmd(), reportCmd(), listCmd(), demoCmd())

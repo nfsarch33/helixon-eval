@@ -1,6 +1,14 @@
 // Package evalfw provides a minimal evaluation framework for agent performance
 // measurement. It runs test suites of Cases, collects metrics (latency, accuracy,
 // token usage), and produces a SuiteResult with a pass/fail/warn verdict.
+//
+// DEPRECATED (v18699-2): the canonical eval framework is
+// github.com/nfsarch33/helixon-platform/internal/helixon-eval per ADR-075.
+// This package remains functional for backward compatibility; new code SHOULD
+// import the canonical package (which is pinned as the rubric anchor by
+// drift-7.x-helixoneval-rubric-coverage.mdc).
+//
+// See: cursor-global-kb/adrs/ADR-075-helixon-eval-binary-canonicity.md
 package evalfw
 
 import (
