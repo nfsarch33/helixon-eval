@@ -9,6 +9,12 @@
 //  4. Test coverage — internal/evalfw coverage ≥ 90% (CI gate).
 //  5. Task completion — every Case returns Verdict ∈ {Pass, Warn, Fail}.
 //
+// DEPRECATED (v18699-2): the canonical rubric anchor is
+// github.com/nfsarch33/helixon-platform/internal/helixon-eval/registry.go
+// per ADR-075 + drift-7.x-helixoneval-rubric-coverage.mdc.
+// This package remains functional for backward compatibility; new code
+// SHOULD import the canonical package. Removal scheduled for v18710.
+//
 // Each rubric exposes a Suite of Cases that can be run via:
 //
 //	helixon-eval run --suite <rubric-name>
