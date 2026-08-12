@@ -50,3 +50,14 @@ dependents exist.
 
 — cursor-parent (ops@example.com)
    v16202-v16300 sprint 2
+
+## Related: helixon-evolver (consumes these verdicts)
+
+Evaluation results emitted by `helixon-eval run` are consumed by
+[`helixon-evolver`](https://github.com/nfsarch33/helixon-evolver) (private
+repo; the Agentrace-EvoSpine-EvoLoop-DRL self-improvement engine). The two
+repos are intentionally separate: this repo measures, that repo acts on
+the measurements. See
+[ADR-0008: helixon-eval vs helixon-evolver Separation](https://github.com/nfsarch33/cursor-global-kb/blob/main/docs/adr/adr-0008-eval-evolver-split.md)
+for the architectural rationale and the NDJSON contract that ties them
+together.
