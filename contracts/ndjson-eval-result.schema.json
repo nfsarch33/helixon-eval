@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nfsarch33/helixon-evolver/contracts/ndjson-eval-result.schema.json",
+  "title": "Helixon Eval Result NDJSON",
+  "description": "Line-delimited JSON contract emitted by helixon-eval and consumed by helixon-evolver. One JSON object per line; lines are whitespace-significant only as separators. See ADR-0008 (helixon-eval vs helixon-evolver separation) and IMP-001 (helixon-eval-evolver-ndjson-parity regression contract q8-c-10).",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "job_id",
+    "eval_id",
+    "tenant_id",
+    "model_id",
+    "rubric_version",
+    "started_at",
+    "finished_at",
+    "status",
+    "metrics"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "description": "Semantic version of this contract. Bump MAJOR on breaking changes; MINOR on additive changes. Both repos must reject records with a higher MAJOR than they understand (see IMP-001 regression contract).",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "examples": ["1.0.0"]
+    },
+    "job_id": {
+      "description": "Globally unique eval job identifier. SHA-256 hex of (tenant_id, model_id, rubric_version, started_at). See v18688-3 (helixon-eval SHA-256 JobID cache).",
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "eval_id": {
+      "description": "Per-attempt identifier. Distinct from job_id when the same job is re-run (retry, idempotency hit, partial requeue).",
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant_id": {
+      "description": "Tenant namespace. Required for cross-tenant isolation (v18688-4). helixon-evolver MUST refuse records whose tenant_id is not in its allow-list.",
+      "type": "string",
+      "minLength": 1
+    },
+    "model_id": {
+      "description": "Identifier of the evaluated model. Format is implementation-defined (e.g. 'qwen3.6:32b-instruct-q5_k_m', 'openai/gpt-4o-mini-2026-07-15').",
+      "type": "string",
+      "minLength": 1
+    },
+    "rubric_version": {
+      "description": "Version of the rubric registry used (per ADR-075).",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "started_at": {
+      "description": "RFC 3339 UTC timestamp marking the start of the eval attempt.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "description": "RFC 3339 UTC timestamp marking the end of the eval attempt. Must be >= started_at.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "description": "Outcome of the eval attempt. 'success' means metrics are populated; 'error' means error.kind/error.message are populated.",
+      "type": "string",
+      "enum": ["success", "error", "timeout", "cancelled"]
+    },
+    "metrics": {
+      "description": "Computed rubric metrics. Keys and value ranges are rubric-defined; values MUST be finite numbers.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "error": {
+      "description": "Populated only when status != 'success'.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["transport", "timeout", "validation", "internal", "policy"]
+        },
+        "message": { "type": "string", "minLength": 1 },
+        "retryable": { "type": "boolean" }
+      }
+    },
+    "artifacts": {
+      "description": "Optional artifact references (logs, traces, raw responses). Values are URIs resolvable by helixon-evolver.",
+      "type": "object",
+      "additionalProperties": { "type": "string", "format": "uri-reference" }
+    },
+    "trace_id": {
+      "description": "Optional OpenTelemetry-compatible trace id (32 hex chars). When present, helixon-evolver MUST correlate the eval into the EvoLoop cycle's trace span.",
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    }
+  },
+  "allOf": [
+    {
+      "description": "finished_at must be >= started_at",
+      "if": {
+        "required": ["started_at", "finished_at"]
+      },
+      "then": {
+        "properties": {
+          "finished_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    {
+      "description": "When status is 'success', metrics must be non-empty.",
+      "if": { "properties": { "status": { "const": "success" } } },
+      "then": {
+        "required": ["metrics"],
+        "properties": {
+          "metrics": { "minProperties": 1 }
+        }
+      }
+    },
+    {
+      "description": "When status is anything other than 'success', error must be present.",
+      "if": { "properties": { "status": { "not": { "const": "success" } } } },
+      "then": { "required": ["error"] }
+    }
+  ],
+  "$comment": "Locked by helixon-eval-evolver-ndjson-parity regression contract (q8-c-10). See ADR-0008."
+}
