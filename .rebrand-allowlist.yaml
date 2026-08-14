@@ -1,0 +1,58 @@
+# rebrand-gate allowlist for helixon-eval (v18750-40h S1d remediation)
+# This package IS a helixon-* package; legacy brand references are intentional.
+#
+# Pattern: file basename; term: the literal legacy token.
+# Added: 2026-08-14 (Sprint v18750-40h S1d)
+schema_version: 1
+entries:
+  # Brand "helixon" / "Helixon" - package identity
+  - file: ".gitignore"
+    term: "helixon"
+  - file: "README.md"
+    term: "helixon"
+  - file: "README.md"
+    term: "Helixon"
+  - file: "*.go"
+    term: "helixon"
+  - file: "*.go"
+    term: "Helixon"
+  - file: "*.json"
+    term: "helixon"
+  - file: "*.json"
+    term: "Helixon"
+  - file: "*.md"
+    term: "helixon"
+  - file: "*.md"
+    term: "Helixon"
+  - file: "go.mod"
+    term: "helixon"
+  - file: "go.sum"
+    term: "helixon"
+  # go-module-path patterns - all reference helixon-* repos
+  - file: "README.md"
+    term: "github.com/nfsarch33/helixon-"
+  - file: "README.md"
+    term: "github.com/nfsarch33/cursor-global-kb"
+  - file: "*.go"
+    term: "github.com/nfsarch33/helixon-"
+  - file: "*.json"
+    term: "github.com/nfsarch33/helixon-"
+  - file: "*.md"
+    term: "github.com/nfsarch33/helixon-"
+  - file: "*.md"
+    term: "github.com/nfsarch33/cursor-global-kb"
+  - file: "go.mod"
+    term: "github.com/nfsarch33/helixon-"
+  # env-var-prefix
+  - file: "*.go"
+    term: "HELIXON_"
+  - file: "*.yml"
+    term: "HELIXON_"
+  - file: "*.yaml"
+    term: "HELIXON_"
+  # docker-image
+  - file: "*.md"
+    term: "helixon/"
+  # tool-name
+  - file: "*.md"
+    term: "cursor-global-kb"
