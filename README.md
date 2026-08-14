@@ -48,7 +48,7 @@ helixon-platform. Original package names preserved as `evalfw` to keep
 the migration surgical; future R5+ may rename to `eval` if no external
 dependents exist.
 
-— cursor-parent (ops@example.com)
+— cursor-parent (operator email; see 1Password vault for contact)
    v16202-v16300 sprint 2
 
 ## Related: helixon-evolver (consumes these verdicts)
