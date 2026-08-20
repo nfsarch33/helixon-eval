@@ -26,7 +26,7 @@ helixon-eval list    [--rubric <name>]
    failures up to 3 times before reporting VerdictFail.
 2. **Observability** — every Case emits at least one metric; ReportWriter
    writes NDJSON to ~/logs/runx/eval-results.ndjson.
-3. **Security** — no secrets on argv (lint enforced by `helixon-eval lint`);
+3. **Security** — no secrets on argv (enforced by the built-in security suite);
    case inputs sourced from fixtures only.
 4. **Test coverage** — internal/evalfw package coverage ≥ 90% (gate
    enforced by CI).
