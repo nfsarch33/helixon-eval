@@ -2,6 +2,7 @@ package rubric
 
 import (
 	"context"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -120,6 +121,24 @@ func TestObservabilitySuite_AllEmitMetrics(t *testing.T) {
 }
 
 func TestSecuritySuite_AllPassInCleanEnv(t *testing.T) {
+	// The no_env_secrets case scans the REAL process environment — that is
+	// the product behaviour. As a unit test it inherited the developer's
+	// shell (any host var with SECRET/PASSWORD in its name failed the
+	// suite on that machine only). Make "CleanEnv" literal: snapshot,
+	// clear, run hermetically, restore. Not parallel-safe by design.
+	saved := os.Environ()
+	os.Clearenv()
+	t.Cleanup(func() {
+		os.Clearenv()
+		for _, kv := range saved {
+			if i := strings.IndexByte(kv, '='); i >= 0 {
+				_ = os.Setenv(kv[:i], kv[i+1:])
+			}
+		}
+	})
+	_ = os.Setenv("PATH", "/usr/bin:/bin")
+	_ = os.Setenv("HOME", t.TempDir())
+
 	r := evalfw.NewRunner(evalfw.RunnerConfig{})
 	sr, _ := r.RunSuite(context.Background(), SecuritySuite())
 	for _, cr := range sr.Cases {
